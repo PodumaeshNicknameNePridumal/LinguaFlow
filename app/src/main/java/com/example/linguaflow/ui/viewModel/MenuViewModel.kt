@@ -1,4 +1,4 @@
-package com.example.linguaflow.ui.viewModels
+package com.example.linguaflow.ui.viewModel
 
 import androidx.lifecycle.ViewModel
 

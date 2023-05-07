@@ -1,4 +1,4 @@
-package com.example.linguaflow.ui.screens
+package com.example.linguaflow.ui.screen
 
 import android.annotation.SuppressLint
 import android.content.res.Configuration
@@ -21,7 +21,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.linguaflow.R
-import com.example.linguaflow.ui.screens.destinations.MainLearningScreenDestination
+import com.example.linguaflow.ui.screen.destinations.MainLearningScreenDestination
+import com.example.linguaflow.ui.screen.destinations.TestsScreenDestination
 import com.example.linguaflow.ui.theme.Biruz
 import com.example.linguaflow.ui.theme.BiruzDark
 import com.ramcosta.composedestinations.annotation.Destination
@@ -73,7 +74,7 @@ fun MainContent(orientation : String, navigator: DestinationsNavigator) {
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            RoundedClickableBox(onClick = { /*TODO*/ }, text = "Menu item1", imageId = R.drawable.img )
+            RoundedClickableBox(onClick = { navigator.navigate(TestsScreenDestination()) }, text = "Menu item1", imageId = R.drawable.img )
             Spacer(modifier = Modifier.padding(10.dp))
             RoundedClickableBox(onClick = { navigator.navigate(MainLearningScreenDestination())  }, text = "Menu item1", imageId = R.drawable.img )
             Spacer(modifier = Modifier.padding(10.dp))
