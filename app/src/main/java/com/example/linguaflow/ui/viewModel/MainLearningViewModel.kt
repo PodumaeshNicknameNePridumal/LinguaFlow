@@ -34,7 +34,16 @@ class MainLearningViewModel(
 //            supabaseDataClient.addData()
 //        }
 //    }
-
+    fun removeLesson() {
+        _mainLearningState.update {
+            it.copy(
+                lessonBase = Lesson(-1,"",0),
+                textLesson = TextLesson(-1, "", ""),
+                videoLesson =  VideoLesson(-1, "", ""),
+                translateLesson = TranslateLesson(-1, "", "", "loading...")
+            )
+        }
+    }
     fun getLesson() {
         viewModelScope.launch {
             _mainLearningState.update {

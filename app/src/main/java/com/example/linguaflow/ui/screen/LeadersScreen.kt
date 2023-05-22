@@ -36,13 +36,10 @@ fun LeadersScreen(
             )
         }
     ) {
-        Scaffold(
-            topBar = {
-                TopAppBar(
-                    title = { Text(text = "Таблица лидеров") }
-                )
-            }
-        ) {
+        if (leadersData.value.leaders.isEmpty()) {
+            LoadingScreen()
+        }
+        else {
             LazyColumn {
                 items(leadersData.value.leaders) {
                     LeaderboardItemRow( leader = it)

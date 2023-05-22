@@ -122,8 +122,13 @@ class SupabaseDataClientImpl(
         return user.progress == user.maxProgress
     }
 
+
     override fun getRole(): String {
         return user.role
+    }
+
+    override fun getName(): String {
+        return user.name
     }
 
 

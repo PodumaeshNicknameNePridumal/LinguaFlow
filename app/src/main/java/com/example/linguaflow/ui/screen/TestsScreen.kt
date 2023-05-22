@@ -55,17 +55,20 @@ fun TestsScreen(
                 onNavigationClick = { navigator.popBackStack()})
         }
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(16.dp)
-        ) {
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxSize()
+        if (testsData.value.testList.isEmpty()) {
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier.fillMaxSize()
             ) {
-                items(testsData.value.testList, key = {it.testId}) { test ->
+                LoadingScreen()
+            }
+        } else {
+            LazyColumn(
+                modifier = Modifier.fillMaxSize()
+            ) {
+                items(testsData.value.testList, key = { it.testId }) { test ->
                     TestItem(test, navigator)
+
                 }
             }
         }
@@ -165,5 +168,15 @@ fun TestsTopBar(
         IconButton(onClick = onLeadersClick) {
             Icon(painter = painterResource(id =R.drawable.leaders_icon), contentDescription = "Leaders", tint = MaterialTheme.colors.primaryVariant)
         }
+    }
+}
+
+@Composable
+fun LoadingScreen() {
+    Box(
+        contentAlignment = Alignment.Center,
+        modifier = Modifier.fillMaxSize()
+    ) {
+        CircularProgressIndicator()
     }
 }

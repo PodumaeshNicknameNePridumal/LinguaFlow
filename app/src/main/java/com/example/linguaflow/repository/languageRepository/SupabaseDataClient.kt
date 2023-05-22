@@ -17,4 +17,5 @@ interface SupabaseDataClient {
     suspend fun singUp(name: String, password: String, login: String)
     suspend fun isLast(): Boolean
     fun getRole(): String
+    fun getName(): String
 }

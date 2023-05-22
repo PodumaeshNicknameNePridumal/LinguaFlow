@@ -52,7 +52,9 @@ fun TestScreen(
                         testViewModel.endTest(numCorrectAnswers, testId)
                         navigator.navigate(TestsScreenDestination())
                     }
-                    , modifier = Modifier.width(200.dp).height(100.dp)) {
+                    , modifier = Modifier
+                            .width(200.dp)
+                            .height(100.dp)) {
                         Text(text = "Закончить текст")
                     }
                 }
@@ -88,6 +90,9 @@ fun TestScreen(
                     )
                 }
             }
+        }
+        else {
+            LoadingScreen()
         }
     }
 }

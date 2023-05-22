@@ -11,6 +11,8 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -23,9 +25,13 @@ import com.example.linguaflow.R
 import com.example.linguaflow.ui.screen.destinations.MainLearningScreenDestination
 import com.example.linguaflow.ui.screen.destinations.TestsScreenDestination
 import com.example.linguaflow.ui.theme.BiruzDark
+import com.example.linguaflow.ui.viewModel.MainLearningViewModel
+import com.example.linguaflow.ui.viewModel.MenuState
+import com.example.linguaflow.ui.viewModel.MenuViewModel
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootNavGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import org.koin.androidx.compose.getViewModel
 import org.koin.core.annotation.Single
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter", "RememberReturnType")
@@ -35,26 +41,51 @@ import org.koin.core.annotation.Single
 fun MainScreen(
     navigator: DestinationsNavigator
 ) {
+    val menuViewModel: MenuViewModel = getViewModel()
+    val menuState by menuViewModel.menuState.collectAsState()
+    menuViewModel.getName()
+
    Scaffold(topBar = {
-       Header(navigator)
+       Header(menuState, navigator)
    }) {
        MainContent(navigator)
    }
 }
-
 @Composable
-fun Header(navigator: DestinationsNavigator) {
+fun Header(
+    menuState: MenuState,
+    navigator: DestinationsNavigator
+) {
 
     TopAppBar(
         backgroundColor = MaterialTheme.colors.primary
     ) {
-        Text(
-            text =  "LinguaFlow",
-            color = MaterialTheme.colors.primaryVariant,
-            modifier = Modifier.fillMaxWidth(),
-            textAlign = TextAlign.Center,
-            fontSize = 25.sp
-        )
+        Box() {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Person,
+                    contentDescription = "User Icon",
+                    tint = MaterialTheme.colors.primaryVariant
+                )
+                Text(
+                    text = menuState.name,
+                    color = MaterialTheme.colors.primaryVariant,
+                    modifier = Modifier.padding(start = 8.dp)
+                )
+
+            }
+            Text(
+                text =  "LinguaFlow",
+                color = MaterialTheme.colors.primaryVariant,
+                modifier = Modifier.fillMaxWidth(),
+                textAlign = TextAlign.Center,
+                fontSize = 25.sp
+            )
+        }
+
     }
 }
 
@@ -97,7 +128,7 @@ fun RoundedClickableBox(
         Text(
             text = text,
             style = MaterialTheme.typography.h6,
-            color = Color.White,
+            color = MaterialTheme.colors.primaryVariant,
             textAlign = TextAlign.Center
         )
     }

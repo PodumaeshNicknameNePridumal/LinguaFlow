@@ -46,51 +46,62 @@ fun MainLearningScreen(
             )
         },
         content = {
-            LazyColumn() {
-                item {
-                    when (mainLearningState.lessonBase.lessonType) {
-                        "text" -> {
-                            Column(
-                                modifier = Modifier
-                                    .fillMaxSize()
-                                    .padding(16.dp),
-                                verticalArrangement = Arrangement.Center
-                            ) {
-                                TaskBox(task = mainLearningState.textLesson.taskText)
-                                Text(
-                                    text = mainLearningState.textLesson.lessonText,
-                                    fontSize = 24.sp,
-                                    textAlign = TextAlign.Center,
-                                    modifier = Modifier.fillMaxWidth()
-                                )
-                                Continue(mainLearningViewModel = mainLearningViewModel, navigator)
-                            }
-                        }
-                        "video" -> {
-                            Column(
-                                modifier = Modifier
-                                    .fillMaxSize()
-                                    .padding(16.dp),
-                                verticalArrangement = Arrangement.Center
-                            ) {
-                                TaskBox(task = mainLearningState.videoLesson.taskText)
-                                VideoPlayer(uri = mainLearningState.videoLesson.videoPath )
-                                Continue(mainLearningViewModel = mainLearningViewModel,navigator)
-                            }
-                        }
-                        "translate" -> {
-                            Column(
-                                modifier = Modifier
-                                    .fillMaxSize()
-                                    .padding(16.dp),
-                                verticalArrangement = Arrangement.Center
-                            ) {
-                                TaskBox(task = mainLearningState.translateLesson.taskText)
-                                TranslationScreen(mainLearningViewModel,mainLearningState,)
+            if (mainLearningState.lessonBase.lessonType.isEmpty()) {
+                LoadingScreen()
+            }
+            else {
+                if (mainLearningState.textLesson.id >= 0 || mainLearningState.videoLesson.id >= 0 || mainLearningState.translateLesson.id >= 0) {
+                    LazyColumn() {
+                        item {
+                            when (mainLearningState.lessonBase.lessonType) {
+                                "text" -> {
+                                    Column(
+                                        modifier = Modifier
+                                            .fillMaxSize()
+                                            .padding(16.dp),
+                                        verticalArrangement = Arrangement.Center
+                                    ) {
+                                        TaskBox(task = mainLearningState.textLesson.taskText)
+                                        Text(
+                                            text = mainLearningState.textLesson.lessonText,
+                                            fontSize = 24.sp,
+                                            textAlign = TextAlign.Center,
+                                            modifier = Modifier.fillMaxWidth()
+                                        )
+                                        Continue(mainLearningViewModel = mainLearningViewModel, navigator)
+                                    }
+                                }
+                                "video" -> {
+                                    Column(
+                                        modifier = Modifier
+                                            .fillMaxSize()
+                                            .padding(16.dp),
+                                        verticalArrangement = Arrangement.Center
+                                    ) {
+                                        TaskBox(task = mainLearningState.videoLesson.taskText)
+                                        VideoPlayer(uri = mainLearningState.videoLesson.videoPath )
+                                        Continue(mainLearningViewModel = mainLearningViewModel,navigator)
+                                    }
+                                }
+                                "translate" -> {
+                                    Column(
+                                        modifier = Modifier
+                                            .fillMaxSize()
+                                            .padding(16.dp),
+                                        verticalArrangement = Arrangement.Center
+                                    ) {
+                                        TaskBox(task = mainLearningState.translateLesson.taskText)
+                                        TranslationScreen(mainLearningViewModel,mainLearningState,)
+                                    }
+                                }
                             }
                         }
                     }
                 }
+                else {
+                    LoadingScreen()
+                }
+
             }
         }
     )
@@ -107,6 +118,7 @@ fun Continue(
             if (mainLearningViewModel.mainLearningState.value.last) {
                 navigator.navigate(MainScreenDestination())
             }
+            mainLearningViewModel.removeLesson()
             mainLearningViewModel.nextLesson()
             mainLearningViewModel.getLesson()},
         modifier = Modifier
@@ -214,6 +226,7 @@ fun TranslationScreen(
                 onClick = {
                     if (translationComplete.value) {
                         println("пиздабол")
+                        mainLearningViewModel.removeLesson()
                         mainLearningViewModel.nextLesson()
                         mainLearningViewModel.getLesson()
                     }
