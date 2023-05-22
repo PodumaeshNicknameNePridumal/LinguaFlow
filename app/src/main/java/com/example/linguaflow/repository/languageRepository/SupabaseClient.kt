@@ -152,8 +152,6 @@ class SupabaseDataClientImpl(
     }
 
     override suspend fun createTest(testName: String, testLevel: String): Int {
-        println("this")
-        println("$testLevel $testName ${user.id}")
         val params = CustomRequest(testName, user.id, testLevel)
         val result = client.postgrest.rpc("createnewtest", params).decodeAs<String>()
         println(result)
