@@ -1,6 +1,5 @@
 package com.example.linguaflow.ui.viewModel
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.linguaflow.dto.Lesson
@@ -8,7 +7,6 @@ import com.example.linguaflow.dto.TextLesson
 import com.example.linguaflow.dto.TranslateLesson
 import com.example.linguaflow.dto.VideoLesson
 import com.example.linguaflow.repository.languageRepository.SupabaseDataClient
-import io.github.jan.supabase.postgrest.postgrest
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -20,7 +18,8 @@ data class MainLearningState(
     val lessonBase: Lesson = Lesson(-1,"",0),
     val textLesson: TextLesson = TextLesson(-1, "", ""),
     val videoLesson: VideoLesson = VideoLesson(-1, "", ""),
-    val translateLesson: TranslateLesson = TranslateLesson(-1, "", "", "loading...")
+    val translateLesson: TranslateLesson = TranslateLesson(-1, "", "", "loading..."),
+    val last: Boolean = false
 )
 
 @KoinViewModel
@@ -56,6 +55,13 @@ class MainLearningViewModel(
                         it.copy(lessonBase = Lesson(-1,"", -1))
                     }
                 }
+            }
+        }
+    }
+    fun isLast() {
+        viewModelScope.launch {
+            _mainLearningState.update {
+                it.copy(last = supabaseDataClient.isLast())
             }
         }
     }

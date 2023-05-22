@@ -14,3 +14,17 @@ data class UserData(
     val totalPoints: Int,
     val userRole: String,
 )
+
+@Serializable
+data class Leader(
+    val fullName: String,
+    val totalPoints: Int
+    )
+
+
+@Serializable
+data class singUpUser(
+    val login: String,
+    val password: String,
+    val fullName: String,
+    )

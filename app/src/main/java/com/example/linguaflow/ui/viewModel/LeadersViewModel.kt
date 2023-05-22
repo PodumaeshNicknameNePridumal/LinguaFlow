@@ -2,7 +2,7 @@ package com.example.linguaflow.ui.viewModel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.linguaflow.dto.Question
+import com.example.linguaflow.dto.Leader
 import com.example.linguaflow.repository.languageRepository.SupabaseDataClient
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -10,29 +10,22 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.koin.android.annotation.KoinViewModel
 
-
-data class TestState(
-    val questions: List<Question> = listOf()
+data class LeadersState(
+    val leaders: List<Leader> = listOf()
 )
 
 @KoinViewModel
-class TestViewModel(
+class LeadersViewModel(
     private val supabaseDataClient: SupabaseDataClient
 ): ViewModel() {
-    private val _testState = MutableStateFlow(TestState())
-    val testState = _testState.asStateFlow()
+    private val _leadersState = MutableStateFlow(LeadersState())
+    val leadersState = _leadersState.asStateFlow()
 
-    fun getQuestions(testId: Int) {
+    fun getLeaders() {
         viewModelScope.launch {
-            _testState.update {
-                it.copy(questions = supabaseDataClient.getQuestions(testId))
+            _leadersState.update {
+                it.copy(leaders = supabaseDataClient.getLeaders())
             }
-        }
-    }
-
-    fun endTest(result: Int, testId: Int) {
-        viewModelScope.launch {
-            supabaseDataClient.endTest(result = result, testId = testId)
         }
     }
 

@@ -7,16 +7,23 @@ import com.example.linguaflow.repository.dataStore.User
 import io.github.jan.supabase.createSupabaseClient
 import io.github.jan.supabase.postgrest.Postgrest
 import io.github.jan.supabase.postgrest.postgrest
+import io.github.jan.supabase.postgrest.rpc
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 import org.koin.core.annotation.Single
+import java.nio.charset.StandardCharsets
+import java.security.MessageDigest
 
 
 @Single
 class SupabaseDataClientImpl(
     private val dataStore: DataStore
 ) : SupabaseDataClient {
+    /////
     private var user = User(
         -1,"",-1,-1
     )
+    //VVfQvjZbsGS9hUsJ
     private val supabaseUrl = "https://pcsrohdpguhrhoyynvcu.supabase.co"
     private val supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBjc3JvaGRwZ3VocmhveXludmN1Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTY3OTI5NjM5NiwiZXhwIjoxOTk0ODcyMzk2fQ._tBfBtJW9E2mP-QPJOWI5rSqknLBm0TSgyM2co9iRG0"
     private val client = createSupabaseClient(
@@ -36,6 +43,7 @@ class SupabaseDataClientImpl(
 
     override suspend fun getLesson(): Lesson  {
         println("progress${user.progress}")
+
         val lesson = client.postgrest["public", "Lessons"].select{
             Lesson::progressNumber eq user.progress
         }.decodeList<Lesson>().firstOrNull() ?: Lesson(-1,"", -1)
@@ -47,7 +55,7 @@ class SupabaseDataClientImpl(
         println("progress${user.progress}")
         val validUser = client.postgrest["public", "Users"].select{
             UserData::login eq login
-            UserData::password eq password
+            UserData::password eq hashPassword(password)
         }.decodeList<UserData>().firstOrNull() ?: UserData(-1,"","","",-1, -1,"")
         Log.e("user", validUser.toString())
         println("dawfawfawfaw")
@@ -91,18 +99,33 @@ class SupabaseDataClientImpl(
         }
     }
 
-    override suspend fun nextLesson() {
+    override suspend fun nextLesson(): Boolean {
         user.progress++
-        client.postgrest["Users"]
-            .update(
-                {
-                    UserData::progress setTo user.progress
+        try {
+            client.postgrest["Users"]
+                .update(
+                    {
+                        UserData::progress setTo user.progress
+                    }
+                ) {
+                    UserData::userId eq user.id
                 }
-            ) {
-                UserData::userId eq user.id
-            }
-        dataStore.saveUser(user = user)
+            dataStore.saveUser(user = user)
+            return false
+        }
+        catch (e: Exception) {
+            return true
+        }
     }
+
+    override suspend fun isLast():Boolean {
+        return user.progress == user.maxProgress
+    }
+
+    override fun getRole(): String {
+        return user.role
+    }
+
 
     override suspend fun getTests(): List<Test> {
         return client.postgrest["testsinfo"].select().decodeList()
@@ -113,4 +136,43 @@ class SupabaseDataClientImpl(
             eq("testId", testId)
         }.decodeList<Question>()
     }
+
+    override suspend fun endTest(result: Int, testId: Int) {
+        val rea = client.postgrest.rpc("upsert_test_user_result", mapOf("p_result" to result,"p_test_id" to testId, "p_user_id" to user.id)).decodeAs<String>()
+        println(rea)
+    }
+
+    override suspend fun getLeaders(): List<Leader> {
+        return client.postgrest["leaders"].select().decodeList()
+    }
+
+    override suspend fun createTest(testName: String, testLevel: String): Int {
+        println("this")
+        println("$testLevel $testName ${user.id}")
+        val params = CustomRequest(testName, user.id, testLevel)
+        val result = client.postgrest.rpc("createnewtest", params).decodeAs<String>()
+        println(result)
+        return result.toInt()
+    }
+
+    override suspend fun addQuestion(question: Question2) {
+        client.postgrest["Question"].insert(question)
+    }
+
+    override suspend fun singUp(name: String, password: String, login: String ) {
+        client.postgrest["Users"].insert(singUpUser(login, hashPassword(password), name))
+    }
+}
+
+@Serializable
+data class CustomRequest(
+    val test_name: String,
+    val creator_id:Int,
+    val level: String
+)
+
+fun hashPassword(password: String): String {
+    val messageDigest = MessageDigest.getInstance("SHA-256")
+    val hashedBytes = messageDigest.digest(password.toByteArray(StandardCharsets.UTF_8))
+    return hashedBytes.joinToString("") { "%02x".format(it) }
 }

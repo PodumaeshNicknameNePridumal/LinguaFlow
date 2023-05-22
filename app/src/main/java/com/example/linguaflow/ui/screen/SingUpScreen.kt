@@ -16,25 +16,13 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.linguaflow.R
-import com.example.linguaflow.ui.screen.destinations.TrollfaceDestination
+import com.example.linguaflow.ui.screen.destinations.AuthorizationScreenDestination
 import com.example.linguaflow.ui.viewModel.SingUpViewModel
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import org.koin.androidx.compose.getViewModel
 
 
-@Destination
-@Composable
-fun Trollface(
-    navigator: DestinationsNavigator
-) {
-    Image(
-        painter = painterResource(id = R.drawable.img_2),
-        contentDescription = null,
-        modifier = Modifier.fillMaxSize(),
-        contentScale = ContentScale.FillBounds
-    )
-}
 
 @Destination
 @Composable
@@ -43,14 +31,6 @@ fun SignUpScreen(
 ) {
     val singUpViewModel: SingUpViewModel = getViewModel()
     val stateData = singUpViewModel.singUpState.collectAsState()
-//    Image(
-//        painter = painterResource(id = R.drawable.img),
-//        contentDescription = null,
-//        modifier = Modifier.fillMaxSize(),
-//        contentScale = ContentScale.FillBounds
-//    )
-    Button(onClick = { navigator.navigate(TrollfaceDestination) }, modifier = Modifier.offset(x = 130.dp, y = 450.dp).size(70.dp).alpha(0f)) {
-    }
     Column(
         modifier = Modifier
             .padding(16.dp),
@@ -83,7 +63,10 @@ fun SignUpScreen(
         )
         Spacer(modifier = Modifier.height(16.dp))
         Button(
-            onClick = { /* Handle sign-up button click */ },
+            onClick = {
+                      singUpViewModel.singUp()
+                navigator.navigate(AuthorizationScreenDestination())
+            },
             modifier = Modifier.align(Alignment.CenterHorizontally)
         ) {
             Text(stringResource(id = R.string.SingUpBtn))

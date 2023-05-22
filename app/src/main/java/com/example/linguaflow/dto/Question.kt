@@ -11,3 +11,11 @@ data class Question(
     val questionText: String,
     val testId: Int,
 )
+
+@Serializable
+data class Question2(
+    val choice: List<String>,
+    val answer: String,
+    val questionText: String,
+    val testId: Int,
+)

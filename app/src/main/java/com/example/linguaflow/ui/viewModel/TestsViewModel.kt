@@ -29,4 +29,8 @@ class TestsViewModel(
         }
     }
 
+    fun getRole(): String {
+        return supabaseDataClient.getRole()
+    }
+
 }

@@ -7,6 +7,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.example.linguaflow.ui.screen.destinations.TestsScreenDestination
 import com.example.linguaflow.ui.viewModel.TestViewModel
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
@@ -48,7 +49,8 @@ fun TestScreen(
                         modifier = Modifier.fillMaxWidth()
                     )
                     Button(onClick = {
-
+                        testViewModel.endTest(numCorrectAnswers, testId)
+                        navigator.navigate(TestsScreenDestination())
                     }
                     , modifier = Modifier.width(200.dp).height(100.dp)) {
                         Text(text = "Закончить текст")

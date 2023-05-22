@@ -18,7 +18,6 @@ import com.example.linguaflow.ui.viewModel.AuthorizationViewModel
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootNavGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import org.koin.androidx.compose.getViewModel
 

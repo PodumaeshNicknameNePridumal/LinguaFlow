@@ -2,6 +2,7 @@ package com.example.linguaflow.ui.screen
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.runtime.*
@@ -15,14 +16,15 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.linguaflow.R
+import com.example.linguaflow.ui.screen.destinations.MainScreenDestination
 import com.example.linguaflow.ui.viewModel.MainLearningState
 import com.example.linguaflow.ui.viewModel.MainLearningViewModel
 import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.ui.StyledPlayerView
 import com.ramcosta.composedestinations.annotation.Destination
-import com.ramcosta.composedestinations.annotation.RootNavGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import org.koin.androidx.compose.getViewModel
 
@@ -36,6 +38,7 @@ fun MainLearningScreen(
     val mainLearningViewModel: MainLearningViewModel = getViewModel()
     val mainLearningState by mainLearningViewModel.mainLearningState.collectAsState()
     mainLearningViewModel.getLesson()
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -43,45 +46,49 @@ fun MainLearningScreen(
             )
         },
         content = {
-            when (mainLearningState.lessonBase.lessonType) {
-                "text" -> {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(16.dp),
-                        verticalArrangement = Arrangement.Center
-                    ) {
-                        TaskBox(task = mainLearningState.textLesson.taskText)
-                        Text(
-                            text = mainLearningState.textLesson.lessonText,
-                            fontSize = 24.sp,
-                            textAlign = TextAlign.Center,
-                            modifier = Modifier.fillMaxWidth()
-                        )
-                        Continue(mainLearningViewModel = mainLearningViewModel)
-                    }
-                }
-                "video" -> {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(16.dp),
-                        verticalArrangement = Arrangement.Center
-                    ) {
-                        TaskBox(task = mainLearningState.videoLesson.taskText)
-                        VideoPlayer(uri = mainLearningState.videoLesson.videoPath )
-                        Continue(mainLearningViewModel = mainLearningViewModel)
-                    }
-                }
-                "translate" -> {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(16.dp),
-                        verticalArrangement = Arrangement.Center
-                    ) {
-                        TaskBox(task = mainLearningState.translateLesson.taskText)
-                        TranslationScreen(mainLearningViewModel,mainLearningState,)
+            LazyColumn() {
+                item {
+                    when (mainLearningState.lessonBase.lessonType) {
+                        "text" -> {
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .padding(16.dp),
+                                verticalArrangement = Arrangement.Center
+                            ) {
+                                TaskBox(task = mainLearningState.textLesson.taskText)
+                                Text(
+                                    text = mainLearningState.textLesson.lessonText,
+                                    fontSize = 24.sp,
+                                    textAlign = TextAlign.Center,
+                                    modifier = Modifier.fillMaxWidth()
+                                )
+                                Continue(mainLearningViewModel = mainLearningViewModel, navigator)
+                            }
+                        }
+                        "video" -> {
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .padding(16.dp),
+                                verticalArrangement = Arrangement.Center
+                            ) {
+                                TaskBox(task = mainLearningState.videoLesson.taskText)
+                                VideoPlayer(uri = mainLearningState.videoLesson.videoPath )
+                                Continue(mainLearningViewModel = mainLearningViewModel,navigator)
+                            }
+                        }
+                        "translate" -> {
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .padding(16.dp),
+                                verticalArrangement = Arrangement.Center
+                            ) {
+                                TaskBox(task = mainLearningState.translateLesson.taskText)
+                                TranslationScreen(mainLearningViewModel,mainLearningState,)
+                            }
+                        }
                     }
                 }
             }
@@ -91,10 +98,15 @@ fun MainLearningScreen(
 
 @Composable
 fun Continue(
-    mainLearningViewModel: MainLearningViewModel
+    mainLearningViewModel: MainLearningViewModel,
+    navigator: DestinationsNavigator
 ) {
     Button(
         onClick = {
+            mainLearningViewModel.isLast()
+            if (mainLearningViewModel.mainLearningState.value.last) {
+                navigator.navigate(MainScreenDestination())
+            }
             mainLearningViewModel.nextLesson()
             mainLearningViewModel.getLesson()},
         modifier = Modifier
@@ -188,7 +200,9 @@ fun TranslationScreen(
                         Icon(
                             painter = painterResource(R.drawable.done),
                             contentDescription = null,
-                            modifier = Modifier.padding(8.dp).size(20.dp)
+                            modifier = Modifier
+                                .padding(8.dp)
+                                .size(20.dp)
                         )
                     }
                 }

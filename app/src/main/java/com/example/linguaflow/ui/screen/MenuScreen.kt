@@ -1,34 +1,32 @@
 package com.example.linguaflow.ui.screen
 
 import android.annotation.SuppressLint
-import android.content.res.Configuration
-import androidx.compose.foundation.*
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.linguaflow.R
 import com.example.linguaflow.ui.screen.destinations.MainLearningScreenDestination
 import com.example.linguaflow.ui.screen.destinations.TestsScreenDestination
-import com.example.linguaflow.ui.theme.Biruz
 import com.example.linguaflow.ui.theme.BiruzDark
 import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.annotation.RootNavGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import org.koin.core.annotation.Single
-
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter", "RememberReturnType")
 @Destination
@@ -40,59 +38,36 @@ fun MainScreen(
    Scaffold(topBar = {
        Header(navigator)
    }) {
-       val context = LocalContext.current
-       val configuration = LocalConfiguration.current
-       val orientation = remember(configuration) {
-           when (configuration.orientation) {
-               Configuration.ORIENTATION_LANDSCAPE -> "landscape"
-               Configuration.ORIENTATION_PORTRAIT -> "portreit"
-               else -> "null"
-           }
-       }
-       MainContent(orientation = orientation, navigator)
+       MainContent(navigator)
    }
 }
 
 @Composable
 fun Header(navigator: DestinationsNavigator) {
+
     TopAppBar(
-        title = { Text(text = "") },
-        navigationIcon = {
-            IconButton(onClick = {navigator.popBackStack()
-            }) {
-                Icon(Icons.Filled.Person, contentDescription = "Back")
-            }
-        },
-    )
+        backgroundColor = MaterialTheme.colors.primary
+    ) {
+        Text(
+            text =  "LinguaFlow",
+            color = MaterialTheme.colors.primaryVariant,
+            modifier = Modifier.fillMaxWidth(),
+            textAlign = TextAlign.Center,
+            fontSize = 25.sp
+        )
+    }
 }
 
 @Composable
-fun MainContent(orientation : String, navigator: DestinationsNavigator) {
-    if (orientation == "landscape") {
-        Row(
-            modifier = Modifier.fillMaxSize(),
-            horizontalArrangement = Arrangement.Center,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            RoundedClickableBox(onClick = { navigator.navigate(TestsScreenDestination()) }, text = "Menu item1", imageId = R.drawable.img )
-            Spacer(modifier = Modifier.padding(10.dp))
-            RoundedClickableBox(onClick = { navigator.navigate(MainLearningScreenDestination())  }, text = "Menu item1", imageId = R.drawable.img )
-            Spacer(modifier = Modifier.padding(10.dp))
-            RoundedClickableBox(onClick = { /*TODO*/ }, text = "Menu item1", imageId = R.drawable.img )
-        }
-    } else
-    {
-        Column(
-            modifier = Modifier.fillMaxSize(),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            RoundedClickableBox(onClick = { /*TODO*/ }, text = "Menu item1", imageId = R.drawable.img )
-            Spacer(modifier = Modifier.padding(10.dp))
-            RoundedClickableBox(onClick = { /*TODO*/ }, text = "Menu item1", imageId = R.drawable.img )
-            Spacer(modifier = Modifier.padding(10.dp))
-            RoundedClickableBox(onClick = { /*TODO*/ }, text = "Menu item1", imageId = R.drawable.img )
-        }
+fun MainContent(navigator: DestinationsNavigator) {
+    Row(
+        modifier = Modifier.fillMaxSize(),
+        horizontalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        RoundedClickableBox(onClick = { navigator.navigate(TestsScreenDestination()) }, text = "Tests", imageId =R.drawable.tests_icon )
+        Spacer(modifier = Modifier.padding(30.dp))
+        RoundedClickableBox(onClick = { navigator.navigate(MainLearningScreenDestination())  }, text = "Learning", imageId = R.drawable.edu_icon )
     }
 }
 
@@ -107,18 +82,17 @@ fun RoundedClickableBox(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = modifier
             .clip(RoundedCornerShape(15.dp))
-            .background(Biruz)
+            .background(MaterialTheme.colors.primary)
             .border(BorderStroke(4.dp, BiruzDark), shape = RoundedCornerShape(15.dp))
             .clickable(onClick = onClick)
             .padding(15.dp)
             .size(180.dp))
     {
-        Image(
+        Icon(
             painter = painterResource(id = imageId),
             contentDescription = null,
             modifier = Modifier
-                .size(160.dp),
-            contentScale = ContentScale.Crop,
+                .size(145.dp),
         )
         Text(
             text = text,
